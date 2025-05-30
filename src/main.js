@@ -1,5 +1,5 @@
 import { fetchImages } from './js/pixabay-api';
-import { renderImages, clearGallery, showLoader, hideLoader } from './js/render-functions';
+import { renderImages, clearGallery, showLoader, hideLoader, showLoadMoreButton, hideLoadMoreButton } from './js/render-functions';
 import iziToast from 'izitoast';
 import 'izitoast/dist/css/iziToast.min.css';
 
@@ -10,12 +10,11 @@ const myDiv = document.getElementById("load-more");
 let currentQuery = '';
 let currentPage = 1;
 const limit = 40;  // API’den sayfa başı çekilen sonuç sayısı
-const totalPages = Math.ceil(81 / limit);
+let totalPages = 0;
 
 
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
-
   const query = searchInput.value.trim();
   if (!query) return;
 
@@ -24,16 +23,11 @@ form.addEventListener('submit', async (e) => {
 
   showLoader();
   clearGallery();
-  
-
-  myDiv.style.display = "flex";
-  myDiv.style.justifyContent = "center";
-  
-  
-  loadMoreBtn.classList.add('hidden');
+  hideLoadMoreButton();
 
   try {
     const data = await fetchImages(currentQuery, currentPage);
+    totalPages = Math.ceil(data.totalHits / limit);
 
     if (data.hits.length === 0) {
       iziToast.warning({
@@ -45,8 +39,14 @@ form.addEventListener('submit', async (e) => {
     }
 
     renderImages(data);
-    loadMoreBtn.classList.remove('hidden'); // ilk sorgudan sonra görünür yap
-    
+    myDiv.style.display = 'flex';
+    myDiv.style.justifyContent = 'center';
+    if (data.hits.length < limit) {
+      hideLoadMoreButton();
+    } else {
+      showLoadMoreButton();
+    }
+
   } catch (error) {
     iziToast.error({
       title: "Hata",
@@ -59,27 +59,27 @@ form.addEventListener('submit', async (e) => {
 });
 
 loadMoreBtn.addEventListener('click', async () => {
-  currentPage += 1;
+  currentPage++;
   showLoader();
 
   try {
     const data = await fetchImages(currentQuery, currentPage);
     renderImages(data);
-    const firstCard = document.querySelector('.image-card');
-    if (firstCard) {
-      const { height: cardHeight } = firstCard.getBoundingClientRect();
-      window.scrollBy({
-        top: cardHeight * 3,
-        behavior: 'smooth',
-      });
-    }
+
     if (currentPage >= totalPages) {
-      loadMoreBtn.classList.add('hidden');
+      hideLoadMoreButton();
       iziToast.info({
         position: "topRight",
         message: "We're sorry, but you've reached the end of search results"
       });
     }
+
+    const firstCard = document.querySelector('.image-card');
+    if (firstCard) {
+      const { height: cardHeight } = firstCard.getBoundingClientRect();
+      window.scrollBy({ top: cardHeight * 2, behavior: 'smooth' });
+    }
+
   } catch (error) {
     iziToast.error({
       title: "Hata",

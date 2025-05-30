@@ -1,9 +1,9 @@
 import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
-const API_KEY = "50461526-1c4ae7086be4914a89297c276"; 
+
 
 const resultsContainer = document.querySelector('#results-container');
-
+const loadMoreBtn = document.getElementById('load-more-btn');
 // Tek bir lightbox örneği, başlangıçta null
 let lightbox = null;
 
@@ -57,4 +57,13 @@ export function showLoader() {
 export function hideLoader() {
   const loader = document.getElementById('loader');
   loader.style.display = 'none';
+}
+
+
+export function showLoadMoreButton() {
+  loadMoreBtn.classList.remove('hidden');
+}
+
+export function hideLoadMoreButton() {
+  loadMoreBtn.classList.add('hidden');
 }
