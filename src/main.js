@@ -9,7 +9,7 @@ const searchInput = document.querySelector('.search-input');
 const myDiv = document.getElementById("load-more");
 let currentQuery = '';
 let currentPage = 1;
-const limit = 40;  // API’den sayfa başı çekilen sonuç sayısı
+const limit = 40;
 let totalPages = 0;
 
 
@@ -27,7 +27,7 @@ form.addEventListener('submit', async (e) => {
 
   try {
     const data = await fetchImages(currentQuery, currentPage);
-    totalPages = Math.ceil(data.totalHits / limit);
+    totalPages = Math.ceil(data.totalHits / limit); 
 
     if (data.hits.length === 0) {
       iziToast.warning({
