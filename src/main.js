@@ -6,6 +6,7 @@ import 'izitoast/dist/css/iziToast.min.css';
 const loadMoreBtn = document.getElementById('load-more-btn');
 const form = document.querySelector('.form');
 const searchInput = document.querySelector('.search-input');
+const myDiv = document.getElementById("load-more");
 let currentQuery = '';
 let currentPage = 1;
 const limit = 40;  // API’den sayfa başı çekilen sonuç sayısı
@@ -23,6 +24,12 @@ form.addEventListener('submit', async (e) => {
 
   showLoader();
   clearGallery();
+  
+
+  myDiv.style.display = "flex";
+  myDiv.style.justifyContent = "center";
+  
+  
   loadMoreBtn.classList.add('hidden');
 
   try {
