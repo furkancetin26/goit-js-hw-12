@@ -29,7 +29,7 @@ form.addEventListener('submit', async (e) => {
     const data = await fetchImages(currentQuery, currentPage);
     totalPages = Math.ceil(data.totalHits / limit); 
 
-    if (data.hits.length === 0) {
+    if (!data || !data.hits || data.hits.length === 0) {
       iziToast.warning({
         title: "Uyarı",
         message: "Sorry, there are no images matching your search query. Please try again!",
@@ -41,11 +41,12 @@ form.addEventListener('submit', async (e) => {
     renderImages(data);
     myDiv.style.display = 'flex';
     myDiv.style.justifyContent = 'center';
-    if (data.hits.length < limit) {
+    if (data.totalHits <= limit || currentPage >= totalPages) {
       hideLoadMoreButton();
     } else {
       showLoadMoreButton();
     }
+
 
   } catch (error) {
     iziToast.error({
@@ -63,10 +64,22 @@ loadMoreBtn.addEventListener('click', async () => {
   showLoader();
 
   try {
+    
     const data = await fetchImages(currentQuery, currentPage);
+    if (!data || !data.hits || data.hits.length === 0) {
+    iziToast.warning({
+  title: "Uyarı",
+  message: "Sorry, there are no images matching your search query. Please try again!",
+  position: "topRight"
+});
+
+    hideLoadMoreButton();
+    return;
+  }
+
     renderImages(data);
 
-    if (currentPage >= totalPages) {
+    if (currentPage >= totalPages || data.hits.length < limit) {
       hideLoadMoreButton();
       iziToast.info({
         position: "topRight",

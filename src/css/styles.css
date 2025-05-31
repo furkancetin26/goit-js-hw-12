@@ -187,6 +187,7 @@ a {
   flex-direction: column;
   align-items: center;
 }
+
 .load-more button{
  padding: 15px 25px;
  border: unset;
